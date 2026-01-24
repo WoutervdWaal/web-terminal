@@ -1,8 +1,22 @@
-{{-- Script Execution Slideover Panel - positioned within terminal content area (below header, above input) --}}
+{{-- Script Execution Slideover Panel - positioned dynamically to fill the content area --}}
 @if($showScriptPanel && !empty($scriptExecution))
 <div
-    class="absolute top-[45px] bottom-[45px] right-0 w-80 max-w-[70%] bg-white dark:bg-gray-900 shadow-2xl border-l border-slate-200 dark:border-white/10 z-40 flex flex-col rounded-bl-lg overflow-hidden"
-    x-data="{ showOutput: @entangle('showScriptOutput') }"
+    class="absolute right-0 w-80 max-w-[70%] bg-white dark:bg-gray-900 shadow-2xl border-l border-slate-200 dark:border-white/10 z-40 flex flex-col rounded-bl-lg overflow-hidden"
+    x-data="{
+        showOutput: @entangle('showScriptOutput'),
+        panelTop: 0,
+        panelBottom: 0,
+        updatePosition() {
+            const terminal = this.$el.closest('.secure-web-terminal');
+            if (!terminal) return;
+            const header = terminal.querySelector(':scope > div.border-b');
+            const input = terminal.querySelector(':scope > div.border-t');
+            if (header) this.panelTop = header.offsetHeight;
+            if (input) this.panelBottom = input.offsetHeight;
+        }
+    }"
+    x-init="updatePosition(); window.addEventListener('resize', () => updatePosition())"
+    :style="{ top: panelTop + 'px', bottom: panelBottom + 'px' }"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="translate-x-full"
     x-transition:enter-end="translate-x-0"
