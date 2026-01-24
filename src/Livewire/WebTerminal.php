@@ -522,6 +522,11 @@ class WebTerminal extends Component
         // Set scripts configuration
         $this->scripts = $scripts;
 
+        // Reset script execution state (prevents stale state from previous sessions)
+        $this->scriptExecution = [];
+        $this->showScriptPanel = false;
+        $this->scriptAwaitingInput = false;
+
         // Initialize current directory
         // For remote connections, don't use local getcwd()
         $configuredDir = $this->getConnectionConfig()['working_directory'] ?? null;
@@ -749,6 +754,11 @@ class WebTerminal extends Component
     {
         if (! $this->isConnected) {
             return;
+        }
+
+        // Cancel any running script first
+        if ($this->isScriptRunning()) {
+            $this->cancelScript();
         }
 
         // Cancel any running process first

@@ -35,7 +35,7 @@
         </svg>
     </div>
     {{-- Script running indicator and controls --}}
-    <div x-show="$wire.isScriptRunning()" class="flex items-center gap-2 ml-3">
+    <div x-show="$wire.isScriptRunning()" x-cloak class="flex items-center gap-2 ml-3">
         <span class="inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-medium text-purple-600 dark:text-purple-400 bg-purple-400/10 border border-purple-500/30 dark:border-purple-400/20 rounded-full leading-none">
             <svg class="w-3 h-3 shrink-0 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -68,7 +68,7 @@
     </div>
 
     {{-- Interactive mode indicator and cancel button (when not running script) --}}
-    <div x-show="isInteractive && !$wire.isScriptRunning()" class="flex items-center gap-2 ml-3">
+    <div x-show="isInteractive && !$wire.isScriptRunning()" x-cloak class="flex items-center gap-2 ml-3">
         <span class="inline-flex items-center gap-1.5 px-2 py-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-400/10 border border-amber-500/30 dark:border-amber-400/20 rounded-full leading-none">
             <svg class="w-3 h-3 shrink-0 animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" stroke-opacity="0.3" />
