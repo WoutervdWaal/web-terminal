@@ -40,11 +40,11 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
-                class="absolute right-0 mt-2 w-64 rounded-lg bg-white dark:bg-zinc-800 shadow-lg ring-1 ring-black/5 dark:ring-white/10 z-50 overflow-hidden"
+                class="absolute right-0 mt-2 w-64 rounded-lg bg-white dark:bg-gray-900 shadow-lg ring-1 ring-black/5 dark:ring-white/10 z-50 overflow-hidden"
                 @click.away="showScriptsDropdown = false"
             >
-                <div class="px-3 py-2 border-b border-slate-200 dark:border-white/10">
-                    <p class="text-xs font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wide">Available Scripts</p>
+                <div class="px-3 py-2 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-gray-800/50">
+                    <p class="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">Available Scripts</p>
                 </div>
                 <div class="py-1 max-h-64 overflow-y-auto">
                     @foreach($this->getAuthorizedScripts() as $script)
@@ -52,7 +52,7 @@
                         type="button"
                         wire:click="runScript('{{ $script['key'] }}')"
                         @click="showScriptsDropdown = false"
-                        class="w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-white/5 transition-colors {{ $script['authorized'] ? '' : 'opacity-50 cursor-not-allowed' }}"
+                        class="w-full px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-white/10 transition-colors {{ $script['authorized'] ? '' : 'opacity-50 cursor-not-allowed' }}"
                         {{ $script['authorized'] ? '' : 'disabled' }}
                         title="{{ $script['authorized'] ? ($script['description'] ?? '') : 'Unauthorized commands: ' . implode(', ', $script['unauthorizedCommands'] ?? []) }}"
                     >
@@ -65,9 +65,9 @@
                             </svg>
                             @endif
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-slate-800 dark:text-zinc-200 truncate">{{ $script['label'] }}</p>
+                                <p class="text-sm font-medium text-slate-800 dark:text-gray-100 truncate">{{ $script['label'] }}</p>
                                 @if($script['description'] ?? false)
-                                <p class="text-xs text-slate-500 dark:text-zinc-400 truncate">{{ $script['description'] }}</p>
+                                <p class="text-xs text-slate-500 dark:text-gray-400 truncate">{{ $script['description'] }}</p>
                                 @endif
                                 @if(!($script['authorized'] ?? true))
                                 <p class="text-xs text-red-500 dark:text-red-400 truncate mt-0.5">
@@ -75,7 +75,7 @@
                                 </p>
                                 @endif
                             </div>
-                            <span class="text-xs text-slate-400 dark:text-zinc-500 shrink-0">{{ $script['commandCount'] }} cmd{{ $script['commandCount'] !== 1 ? 's' : '' }}</span>
+                            <span class="text-xs text-slate-400 dark:text-gray-500 shrink-0">{{ $script['commandCount'] }} cmd{{ $script['commandCount'] !== 1 ? 's' : '' }}</span>
                         </div>
                     </button>
                     @endforeach

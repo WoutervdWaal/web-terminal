@@ -1,7 +1,7 @@
 {{-- Script Execution Slideover Panel - positioned within terminal content area (below header, above input) --}}
 @if($showScriptPanel && !empty($scriptExecution))
 <div
-    class="absolute top-[45px] bottom-[45px] right-0 w-80 max-w-[70%] bg-white dark:bg-zinc-900 shadow-2xl border-l border-slate-200 dark:border-white/10 z-40 flex flex-col rounded-bl-lg overflow-hidden"
+    class="absolute top-[45px] bottom-[45px] right-0 w-80 max-w-[70%] bg-white dark:bg-gray-900 shadow-2xl border-l border-slate-200 dark:border-white/10 z-40 flex flex-col rounded-bl-lg overflow-hidden"
     x-data="{ showOutput: @entangle('showScriptOutput') }"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="translate-x-full"
@@ -11,7 +11,7 @@
     x-transition:leave-end="translate-x-full"
 >
     {{-- Panel Header --}}
-    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800/50">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-gray-800/50">
         <div class="flex items-center gap-2 min-w-0">
             @if($scriptExecution['isRunning'] ?? false)
             <svg class="w-5 h-5 text-purple-500 dark:text-purple-400 animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -32,8 +32,8 @@
             </svg>
             @endif
             <div class="min-w-0">
-                <h3 class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $scriptExecution['scriptLabel'] ?? 'Script' }}</h3>
-                <p class="text-xs text-slate-500 dark:text-zinc-400">
+                <h3 class="text-sm font-medium text-slate-900 dark:text-gray-100 truncate">{{ $scriptExecution['scriptLabel'] ?? 'Script' }}</h3>
+                <p class="text-xs text-slate-500 dark:text-gray-400">
                     {{ $scriptExecution['completedCount'] ?? 0 }} / {{ $scriptExecution['totalCommands'] ?? 0 }} commands
                 </p>
             </div>
@@ -46,21 +46,21 @@
             :disabled="$wire.isScriptRunning()"
             title="{{ $this->isScriptRunning() ? 'Cannot close while script is running' : 'Close panel' }}"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-slate-500 dark:text-zinc-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-slate-500 dark:text-gray-400">
                 <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
             </svg>
         </button>
     </div>
 
     {{-- Progress Bar --}}
-    <div class="px-4 py-2 bg-slate-100/50 dark:bg-zinc-800/30">
-        <div class="h-1.5 w-full bg-slate-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+    <div class="px-4 py-2 bg-slate-100/50 dark:bg-gray-800/30">
+        <div class="h-1.5 w-full bg-slate-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
                 class="h-full transition-all duration-300 ease-out rounded-full {{ ($scriptExecution['failedCount'] ?? 0) > 0 ? 'bg-red-500' : 'bg-purple-500' }}"
                 style="width: {{ $scriptExecution['progressPercentage'] ?? 0 }}%"
             ></div>
         </div>
-        <p class="text-xs text-slate-500 dark:text-zinc-400 mt-1 text-center">{{ $scriptExecution['progressPercentage'] ?? 0 }}% complete</p>
+        <p class="text-xs text-slate-500 dark:text-gray-400 mt-1 text-center">{{ $scriptExecution['progressPercentage'] ?? 0 }}% complete</p>
     </div>
 
     {{-- Command List --}}
@@ -74,7 +74,7 @@
             <div class="shrink-0 mt-0.5">
                 @switch($cmd['status'])
                     @case('pending')
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-slate-400 dark:text-zinc-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-slate-400 dark:text-gray-500">
                             <circle cx="12" cy="12" r="10" stroke-dasharray="4 4" />
                         </svg>
                         @break
@@ -104,11 +104,11 @@
 
             {{-- Command Info --}}
             <div class="flex-1 min-w-0">
-                <p class="font-mono text-xs text-slate-700 dark:text-zinc-300 truncate" title="{{ $cmd['command'] }}">{{ $cmd['command'] }}</p>
+                <p class="font-mono text-xs text-slate-700 dark:text-gray-200 truncate" title="{{ $cmd['command'] }}">{{ $cmd['command'] }}</p>
                 <div class="flex items-center gap-2 mt-0.5">
                     <span class="text-[10px] {{ $status->cssClass() }}">{{ $status->label() }}</span>
                     @if($cmd['executionTime'] !== null)
-                    <span class="text-[10px] text-slate-400 dark:text-zinc-500">{{ round($cmd['executionTime'] * 1000) }}ms</span>
+                    <span class="text-[10px] text-slate-400 dark:text-gray-500">{{ round($cmd['executionTime'] * 1000) }}ms</span>
                     @endif
                     @if($cmd['exitCode'] !== null && $cmd['exitCode'] !== 0)
                     <span class="text-[10px] text-red-500">exit {{ $cmd['exitCode'] }}</span>
@@ -117,18 +117,18 @@
             </div>
 
             {{-- Command Number --}}
-            <span class="text-[10px] text-slate-400 dark:text-zinc-500 shrink-0">#{{ $index + 1 }}</span>
+            <span class="text-[10px] text-slate-400 dark:text-gray-500 shrink-0">#{{ $index + 1 }}</span>
         </div>
         @endforeach
     </div>
 
     {{-- Panel Footer --}}
-    <div class="px-4 py-3 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-zinc-800/50 space-y-2">
+    <div class="px-4 py-3 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-gray-800/50 space-y-2">
         {{-- Toggle Output Button --}}
         <button
             type="button"
             @click="showOutput = !showOutput"
-            class="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-zinc-400 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors"
+            class="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-white/10 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
         >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                 <path fill-rule="evenodd" d="M2 4.25A2.25 2.25 0 0 1 4.25 2h11.5A2.25 2.25 0 0 1 18 4.25v8.5A2.25 2.25 0 0 1 15.75 15h-3.105a3.501 3.501 0 0 0 1.1 1.677A.75.75 0 0 1 13.26 18H6.74a.75.75 0 0 1-.484-1.323A3.501 3.501 0 0 0 7.355 15H4.25A2.25 2.25 0 0 1 2 12.75v-8.5Zm1.5 0a.75.75 0 0 1 .75-.75h11.5a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-.75.75H4.25a.75.75 0 0 1-.75-.75v-7.5Z" clip-rule="evenodd" />
