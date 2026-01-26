@@ -6,6 +6,7 @@ A secure web terminal package for Laravel with Filament integration. Execute all
 
 - **Connection types**: Local shell execution or SSH connections to remote servers
 - **Command whitelisting**: Configurable allowlist to restrict which commands can be executed
+- **Scripts**: Define reusable command sequences with progress tracking and one-click execution
 - **Comprehensive logging**: Audit trail for connections, commands, outputs, and errors
 - **Multi-tenant support**: Built-in tenant isolation for SaaS applications
 - **Session management**: Inactivity timeout, disconnect-on-navigate, and session statistics
@@ -891,6 +892,207 @@ WebTerminal::make()
     ->loginShell()                     // Enable full shell environment
     ->title('Git Terminal')            // Custom title
     ->height('400px')
+```
+
+## Scripts
+
+Scripts allow you to define reusable sequences of commands that can be executed with a single click. They appear in a dropdown menu in the terminal header and provide visual feedback during execution.
+
+### Defining Scripts
+
+Use the `Script` class to define scripts with a fluent API:
+
+```php
+use MWGuerra\WebTerminal\Data\Script;
+use MWGuerra\WebTerminal\Schemas\Components\WebTerminal;
+
+WebTerminal::make()
+    ->local()
+    ->scripts([
+        Script::make('deploy')
+            ->label('Deploy Application')
+            ->description('Pull latest code and restart services')
+            ->icon('heroicon-o-rocket-launch')
+            ->commands([
+                'git pull origin main',
+                'composer install --no-dev',
+                'php artisan migrate --force',
+                'php artisan cache:clear',
+            ])
+            ->stopOnError(),
+
+        Script::make('logs')
+            ->label('View Recent Logs')
+            ->description('Display the last 100 lines of Laravel logs')
+            ->commands(['tail -100 storage/logs/laravel.log'])
+            ->continueOnError(),
+    ])
+```
+
+### Script Configuration Options
+
+| Method | Description | Default |
+|--------|-------------|---------|
+| `make(string $key)` | Create a script with a unique identifier | Required |
+| `label(string)` | Display name in the dropdown menu | Key value |
+| `description(string)` | Human-readable description | `null` |
+| `icon(string)` | Heroicon name for the dropdown | `'heroicon-o-command-line'` |
+| `commands(array)` | List of commands to execute sequentially | `[]` |
+
+### Execution Behavior
+
+| Method | Description | Default |
+|--------|-------------|---------|
+| `stopOnError()` | Stop execution if any command fails | `true` |
+| `continueOnError()` | Continue execution even if commands fail | - |
+| `confirmBeforeRun()` | Require user confirmation before running | `false` |
+
+### Elevated Scripts
+
+Scripts can bypass the command whitelist using the `elevated()` method. Use this for trusted administrative scripts:
+
+```php
+Script::make('maintenance')
+    ->label('Enable Maintenance Mode')
+    ->elevated()  // Bypasses command whitelist
+    ->commands([
+        'php artisan down --secret=bypass-token',
+        'php artisan cache:clear',
+        'php artisan config:cache',
+    ])
+```
+
+**Warning:** Elevated scripts bypass all command authorization checks. Only use for trusted scripts that require commands not in your whitelist.
+
+### Disconnection Scripts
+
+For scripts that will disconnect the terminal (like server reboots), use the `willDisconnect()` method:
+
+```php
+Script::make('reboot')
+    ->label('Reboot Server')
+    ->elevated()
+    ->willDisconnect()
+    ->beforeMessage('Server will reboot in 30 seconds.')
+    ->disconnectMessage('Server is rebooting. Please wait and reconnect.')
+    ->confirmBeforeRun()
+    ->commands(['sudo shutdown -r +1'])
+```
+
+| Method | Description |
+|--------|-------------|
+| `willDisconnect()` | Mark script as causing disconnection |
+| `beforeMessage(string)` | Message shown before script starts |
+| `disconnectMessage(string)` | Message shown when disconnection occurs |
+
+### Script Authorization
+
+Scripts are only shown in the dropdown if the user is authorized to run them. Authorization is determined by:
+
+1. **Elevated scripts**: Always authorized (bypass whitelist)
+2. **Terminal allows all commands**: Always authorized
+3. **Command whitelist**: All script commands must be in the `allowedCommands` list
+
+```php
+// This script will only appear if 'git *' and 'composer *' are allowed
+Script::make('update')
+    ->commands(['git pull', 'composer install'])
+
+// This script always appears (elevated bypasses whitelist)
+Script::make('admin-task')
+    ->elevated()
+    ->commands(['any-command-here'])
+```
+
+### Script Execution UI
+
+When a script runs, a slide-over panel displays:
+- Script name and progress percentage
+- Progress bar
+- List of all commands with status icons
+- Execution time for each command
+- Exit codes for completed commands
+- Cancel button to stop execution
+
+**Note:** Terminal input is disabled while a script is running to prevent interference with script execution. The input field is re-enabled once the script completes or is cancelled.
+
+Command statuses:
+- **Pending**: Waiting to execute
+- **Running**: Currently executing
+- **Success**: Completed with exit code 0
+- **Failed**: Completed with non-zero exit code
+- **Skipped**: Not executed (due to `stopOnError` or cancellation)
+
+### Script Examples
+
+#### Deployment Script
+
+```php
+Script::make('deploy')
+    ->label('Deploy to Production')
+    ->description('Full deployment with migrations')
+    ->icon('heroicon-o-rocket-launch')
+    ->commands([
+        'git pull origin main',
+        'composer install --no-dev --optimize-autoloader',
+        'php artisan migrate --force',
+        'php artisan config:cache',
+        'php artisan route:cache',
+        'php artisan view:cache',
+    ])
+    ->stopOnError()
+    ->confirmBeforeRun()
+```
+
+#### Log Viewer Script
+
+```php
+Script::make('all-logs')
+    ->label('View All Logs')
+    ->description('Display recent logs from multiple sources')
+    ->icon('heroicon-o-document-text')
+    ->commands([
+        'echo "=== Laravel Logs ==="',
+        'tail -50 storage/logs/laravel.log',
+        'echo ""',
+        'echo "=== Nginx Access Logs ==="',
+        'tail -20 /var/log/nginx/access.log',
+    ])
+    ->continueOnError()  // Continue even if some logs don't exist
+```
+
+#### Database Backup Script
+
+```php
+Script::make('backup-db')
+    ->label('Backup Database')
+    ->description('Create a timestamped database backup')
+    ->icon('heroicon-o-circle-stack')
+    ->elevated()
+    ->commands([
+        'php artisan backup:run --only-db',
+    ])
+    ->confirmBeforeRun()
+```
+
+#### Server Maintenance Script
+
+```php
+Script::make('server-status')
+    ->label('Server Status')
+    ->description('Check server health metrics')
+    ->icon('heroicon-o-server')
+    ->commands([
+        'echo "=== Disk Usage ==="',
+        'df -h',
+        'echo ""',
+        'echo "=== Memory Usage ==="',
+        'free -m',
+        'echo ""',
+        'echo "=== System Uptime ==="',
+        'uptime',
+    ])
+    ->continueOnError()
 ```
 
 ## Logging
