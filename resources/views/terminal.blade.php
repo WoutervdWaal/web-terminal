@@ -4,6 +4,7 @@
     x-data="{
         isInteractive: @entangle('isInteractive'),
         isConnected: @entangle('isConnected'),
+        scriptExecution: @entangle('scriptExecution'),
         showInfoPanel: false,
         pollInterval: null,
         cooldownActive: false,
@@ -176,6 +177,9 @@
                 }
             });
         },
+        isScriptRunning() {
+            return this.scriptExecution && this.scriptExecution.isRunning === true;
+        },
         handleKeydown(event) {
             // Ignore if not connected
             if (!this.isConnected) {
@@ -187,7 +191,7 @@
 
             // Ctrl+C to cancel process or script
             if (event.ctrlKey && event.key === 'c') {
-                if ($wire.isScriptRunning()) {
+                if (this.isScriptRunning()) {
                     event.preventDefault();
                     $wire.cancelScript();
                     return;

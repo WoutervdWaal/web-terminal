@@ -19,13 +19,13 @@
         wire:keydown.enter="executeCommand"
         @keydown="handleKeydown($event)"
         @input="scrollToBottom()"
-        :placeholder="!isConnected ? 'Click Connect to start...' : ($wire.scriptAwaitingInput ? 'Enter input for running command... (Ctrl+C to cancel script)' : (isInteractive ? 'Type input and press Enter (Ctrl+C to cancel)...' : ($wire.isScriptRunning() ? 'Script running...' : 'Type a command...')))"
+        :placeholder="!isConnected ? 'Click Connect to start...' : ($wire.scriptAwaitingInput ? 'Enter input for running command... (Ctrl+C to cancel script)' : (isInteractive ? 'Type input and press Enter (Ctrl+C to cancel)...' : (isScriptRunning() ? 'Script running...' : 'Type a command...')))"
         autocomplete="off"
         autocapitalize="off"
         autocorrect="off"
         spellcheck="false"
         aria-label="Command input"
-        :disabled="!isConnected || ($wire.isExecuting && !isInteractive && !$wire.scriptAwaitingInput) || ($wire.isScriptRunning() && !$wire.scriptAwaitingInput)"
+        :disabled="!isConnected || ($wire.isExecuting && !isInteractive && !$wire.scriptAwaitingInput) || (isScriptRunning() && !$wire.scriptAwaitingInput)"
     />
     {{-- Loading spinner (non-interactive) --}}
     <div wire:loading wire:target="executeCommand" x-show="!isInteractive" class="ml-3 text-blue-600 dark:text-blue-400">
