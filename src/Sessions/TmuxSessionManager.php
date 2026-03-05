@@ -527,15 +527,15 @@ class TmuxSessionManager implements SessionManagerInterface
 
         $mainCommand = implode(' ', $parts);
 
-        // After creating the session, set remain-on-exit so we can capture output
-        // even after the command completes
-        $setRemainOnExit = sprintf(
-            '%s set-option -t %s remain-on-exit on 2>/dev/null',
-            $tmux,
+        // Set remain-on-exit using tmux command chaining (\;) so it's applied
+        // atomically by the tmux server. Using shell's && would create a race
+        // condition where fast commands (e.g. php artisan) finish before the
+        // option is set, causing the session to be destroyed with no output.
+        return sprintf(
+            '%s \\; set-option -t %s remain-on-exit on',
+            $mainCommand,
             escapeshellarg($tmuxSession)
         );
-
-        return sprintf('%s && %s', $mainCommand, $setRemainOnExit);
     }
 
     /**
