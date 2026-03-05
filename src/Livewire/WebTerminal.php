@@ -87,12 +87,12 @@ class WebTerminal extends Component
     /**
      * The command being executed in interactive mode (for logging).
      */
-    protected string $interactiveCommand = '';
+    public string $interactiveCommand = '';
 
     /**
      * Timestamp when interactive command started (for execution time logging).
      */
-    protected float $interactiveStartTime = 0;
+    public float $interactiveStartTime = 0;
 
     /**
      * The terminal prompt string.
