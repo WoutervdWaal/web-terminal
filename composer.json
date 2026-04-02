@@ -1,5 +1,5 @@
 {
-    "name": "mwguerra/web-terminal",
+    "name": "wouter/web-terminal",
     "description": "A web-based terminal component for Filament/Laravel with command whitelisting and multiple connection types",
     "keywords": [
         "laravel",
@@ -73,6 +73,6 @@
             ]
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "minimum-stability": "dev",
+    "prefer-stable": false
 }

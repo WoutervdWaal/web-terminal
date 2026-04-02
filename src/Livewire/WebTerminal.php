@@ -385,6 +385,11 @@ class WebTerminal extends Component
     public bool $showScriptPanel = false;
 
     /**
+     * Script key pending user confirmation before running.
+     */
+    public string $pendingScriptKey = '';
+
+    /**
      * Whether to show terminal output in the script panel.
      */
     public bool $showScriptOutput = true;
@@ -1929,6 +1934,16 @@ class WebTerminal extends Component
             }
         }
 
+        // Check if confirmation is required
+        if ($script->requiresConfirmation() && $this->pendingScriptKey !== $key) {
+            $this->pendingScriptKey = $key;
+
+            return;
+        }
+
+        // Clear any pending confirmation
+        $this->pendingScriptKey = '';
+
         // Show the script panel
         $this->showScriptPanel = true;
 
@@ -1959,6 +1974,27 @@ class WebTerminal extends Component
 
         // Start executing commands
         $this->executeNextScriptCommand();
+    }
+
+    /**
+     * Confirm and run the pending script.
+     */
+    public function confirmPendingScript(): void
+    {
+        if ($this->pendingScriptKey === '') {
+            return;
+        }
+
+        $key = $this->pendingScriptKey;
+        $this->runScript($key);
+    }
+
+    /**
+     * Cancel the pending script confirmation.
+     */
+    public function cancelPendingScript(): void
+    {
+        $this->pendingScriptKey = '';
     }
 
     /**

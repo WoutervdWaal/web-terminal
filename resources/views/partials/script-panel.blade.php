@@ -31,10 +31,9 @@
     <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-gray-800/50">
         <div class="flex items-center gap-2 min-w-0">
             @if($scriptExecution['isRunning'] ?? false)
-            <svg class="w-5 h-5 text-purple-500 dark:text-purple-400 animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+            <span class="loading-dots flex items-center gap-0.5 w-5 h-5 justify-center text-purple-500 dark:text-purple-400 shrink-0">
+                <span></span><span></span><span></span>
+            </span>
             @elseif($scriptExecution['isCancelled'] ?? false)
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-amber-500 shrink-0">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
@@ -96,10 +95,9 @@
                         </svg>
                         @break
                     @case('running')
-                        <svg class="w-4 h-4 text-blue-500 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <span class="loading-dots flex items-center gap-0.5 w-4 h-4 justify-center text-blue-500">
+                            <span></span><span></span><span></span>
+                        </span>
                         @break
                     @case('success')
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-emerald-500">
@@ -123,7 +121,7 @@
             <div class="flex-1 min-w-0">
                 <p class="font-mono text-xs text-slate-700 dark:text-gray-200 truncate" title="{{ $cmd['command'] }}">{{ $cmd['command'] }}</p>
                 <div class="flex items-center gap-2 mt-0.5">
-                    <span class="text-[10px] {{ $status->cssClass() }}">{{ $status->label() }}</span>
+                    <span class="text-[10px] {{ $status->cssClass() }} {{ $status === \MWGuerra\WebTerminal\Enums\ScriptCommandStatus::Running ? 'shimmer-text' : '' }}">{{ $status->label() }}</span>
                     @if($cmd['executionTime'] !== null)
                     <span class="text-[10px] text-slate-400 dark:text-gray-500">{{ round($cmd['executionTime'] * 1000) }}ms</span>
                     @endif
